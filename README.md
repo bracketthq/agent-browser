@@ -42,8 +42,6 @@ agent-browser install  # Download Chrome from Chrome for Testing (first time onl
 
 ### From Source
 
-Requires Node.js 24+, pnpm 11+, and Rust.
-
 ```bash
 git clone https://github.com/vercel-labs/agent-browser
 cd agent-browser
@@ -75,7 +73,6 @@ Detects your installation method (npm, Homebrew, or Cargo) and runs the appropri
 ### Requirements
 
 - **Chrome** - Run `agent-browser install` to download Chrome from [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing/) (Google's official automation channel). Existing Chrome, Brave, Playwright, and Puppeteer installations are detected automatically. No Playwright or Node.js required for the daemon.
-- **Node.js 24+ and pnpm 11+** - Only needed when building from source.
 - **Rust** - Only needed when building from source (see From Source above).
 
 ## Quick Start
@@ -634,7 +631,7 @@ agent-browser includes security features for safe AI agent deployments. All feat
 - **Authentication Vault** -- Store credentials locally (always encrypted), reference by name. The LLM never sees passwords. `auth login` navigates with `load` and then waits for login form selectors to appear (SPA-friendly, timeout follows the default action timeout). A key is auto-generated at `~/.agent-browser/.encryption-key` if `AGENT_BROWSER_ENCRYPTION_KEY` is not set: `echo "pass" | agent-browser auth save github --url https://github.com/login --username user --password-stdin` then `agent-browser auth login github`
 - **Content Boundary Markers** -- Wrap page output in delimiters so LLMs can distinguish tool output from untrusted content: `--content-boundaries`
 - **Domain Allowlist** -- Restrict navigation to trusted domains (wildcards like `*.example.com` also match the bare domain): `--allowed-domains "example.com,*.example.com"`. Sub-resource requests (scripts, images, fetch) and WebSocket/EventSource connections to non-allowed domains are also blocked. Include any CDN domains your target pages depend on (e.g., `*.cdn.example.com`).
-- **Block signal** -- When the filter rejects a document navigation (top-level, `window.open`, or `<iframe>`), the tab is redirected to `about:blank#agent-browser:blocked=<host>&mode=allowlist&via=<navigation\|window_open>`. The address bar, `location.href`, `tab list`, and screenshots all reflect this URL, so callers can detect a block by checking whether the current URL starts with `about:blank#agent-browser:blocked=`. Subresource blocks (scripts, images, `fetch`) produce a network-layer error and do not affect the tab URL.
+- **Block signal** -- When the filter rejects a document navigation (top-level, `window.open`, or `<iframe>`), the tab is redirected to `about:blank#agent-browser:blocked=<host>&via=<navigation\|window_open>`. The address bar, `location.href`, `tab list`, and screenshots all reflect this URL, so callers can detect a block by checking whether the current URL starts with `about:blank#agent-browser:blocked=`. Subresource blocks (scripts, images, `fetch`) produce a network-layer error and do not affect the tab URL.
 - **Action Policy** -- Gate destructive actions with a static policy file: `--action-policy ./policy.json`
 - **Action Confirmation** -- Require explicit approval for sensitive action categories: `--confirm-actions eval,download`
 - **Output Length Limits** -- Prevent context flooding: `--max-output 50000`

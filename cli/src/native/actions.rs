@@ -6896,13 +6896,11 @@ fn browser_metadata_from_version(version: &Value) -> Option<Value> {
 /// redirect target whenever the domain filter rejects a document
 /// navigation. The `via` field distinguishes top-level navigations from
 /// window.open new-tab opens so callers can disambiguate which trigger
-/// fired. The `mode` field is always `allowlist` here; a `blocklist`
-/// value is reserved for the forthcoming --blocked-domains sibling.
+/// fired. Callers detect a block by prefix-matching
+/// `about:blank#agent-browser:blocked=` on the current URL; additional
+/// fields can be appended later without breaking existing readers.
 pub(crate) fn blocked_about_blank_url(host: &str, via: &str) -> String {
-    format!(
-        "about:blank#agent-browser:blocked={}&mode=allowlist&via={}",
-        host, via
-    )
+    format!("about:blank#agent-browser:blocked={}&via={}", host, via)
 }
 
 // ---------------------------------------------------------------------------
@@ -8857,12 +8855,12 @@ mod tests {
         let url = super::blocked_about_blank_url("news.ycombinator.com", "navigation");
         assert_eq!(
             url,
-            "about:blank#agent-browser:blocked=news.ycombinator.com&mode=allowlist&via=navigation"
+            "about:blank#agent-browser:blocked=news.ycombinator.com&via=navigation"
         );
         let url2 = super::blocked_about_blank_url("evil.example", "window_open");
         assert_eq!(
             url2,
-            "about:blank#agent-browser:blocked=evil.example&mode=allowlist&via=window_open"
+            "about:blank#agent-browser:blocked=evil.example&via=window_open"
         );
     }
 
